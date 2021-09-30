@@ -59,7 +59,7 @@ library(moments);
 jarque.test(residuals(reg));
 
 
-#Heteroskeda med White
+#Heteroskedasticity med White
 
 #Auto test med 
 

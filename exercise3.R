@@ -9,22 +9,31 @@ cat("\014");
 
 library(readxl)
 
-#Three-factor
-industries <- read_excel("49_Industry_Portfolios.xlsx", skip = 11, n_max=1142, col_types = "numeric")
-Fama  <- read_excel("F-F_Research_Data_Factors.xlsx", skip = 3, n_max=1142, col_types = "numeric")
+#Three-factor model
+industriesThree <- read_excel("49_Industry_Portfolios.xlsx", skip = 11, n_max=1142, col_types = "numeric")
+ThreeFactor  <- read_excel("F-F_Research_Data_Factors.xlsx", skip = 3, n_max=1142, col_types = "numeric")
 
+#Five-factor model
+industriesFive = tail(industriesThree,697)
+FiveFactor  <- read_excel("F-F_Research_Data_5_Factors_2x3.xlsx", skip = 3, n_max=697, col_types = "numeric")
 
-#Five-factor
-industries <- read_excel("49_Industry_Portfolios.xlsx", skip = 11+1142-698, n_max=697, col_types = "numeric")
-Fama  <- read_excel("F-F_Research_Data_5_Factors_2x3.xlsx", skip = 3, n_max=697, col_types = "numeric")
+smoke = industries[,6]
+steel = industries[,20]
 
-smoke = industries[,20]
-Fama = Fama[,-1]
+industriesThree = industriesThree[,-1]
+industriesThree = as.matrix(industriesThree)
+
+industriesFive = industriesFive[,-1]
+industriesFive = as.matrix(industriesFive)
 
 smoke = as.matrix(smoke)
-Fama = as.matrix(Fama)
+steel = as.matrix(steel)
 
-reg = lm(smoke ~ Fama)
+smokeThree = lm(smoke ~ industriesThree)
+smokeFive = lm(smoke ~ industriesFive)
+steelThree = lm(steel ~ industriesThree)
+smokeFive = lm(steel ~ industriesFive)
+
 names(reg$coefficients) <- c("(Intercept)", tail(colnames(Fama),length(colnames(Fama))-1))
 summary(reg)
 

@@ -3,36 +3,29 @@
 #Set your working directory to source file location!!!
 # Or launch R in the project folder
 
-
 rm(list=ls());
 cat("\014");
 
 library(readxl)
 
 #Three-factor model
+#ThreeFactor  <- read_excel("F-F_Research_Data_Factors.xlsx", skip = 3, n_max=1142, col_types = "numeric")
 industriesThree <- read_excel("49_Industry_Portfolios.xlsx", skip = 11, n_max=1142, col_types = "numeric")
-ThreeFactor  <- read_excel("F-F_Research_Data_Factors.xlsx", skip = 3, n_max=1142, col_types = "numeric")
 
 #Five-factor model
+Fama  <- read_excel("F-F_Research_Data_5_Factors_2x3.xlsx", skip = 3, n_max=697, col_types = "numeric")
 industriesFive = tail(industriesThree,697)
-FiveFactor  <- read_excel("F-F_Research_Data_5_Factors_2x3.xlsx", skip = 3, n_max=697, col_types = "numeric")
 
-smoke = industries[,6]  #smoke
-steel = industries[,20] #steel
-
-ThreeFactor = ThreeFactor[,-1]
-ThreeFactor = as.matrix(ThreeFactor)
-
-FiveFactor = FiveFactor[,-1]
-FiveFactor = as.matrix(FiveFactor)
-
+smoke = industriesFive[,6]
 smoke = as.matrix(smoke)
-steel = as.matrix(steel)
 
-smokeThree = lm(smoke ~ ThreeFactor)
-smokeFive = lm(smoke ~ FiveFactor)
-steelThree = lm(steel ~ ThreeFactor)
-smokeFive = lm(steel ~ FiveFactor)
+# ThreeFactor = ThreeFactor[,-1]
+# ThreeFactor = as.matrix(ThreeFactor)
+
+Fama = Fama[,-1]
+Fama = as.matrix(Fama)
+
+reg = lm(smoke ~ Fama)
 
 names(reg$coefficients) <- c("(Intercept)", tail(colnames(Fama),length(colnames(Fama))-1))
 summary(reg)

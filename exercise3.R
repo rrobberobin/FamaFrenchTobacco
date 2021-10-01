@@ -19,18 +19,27 @@ industries = tail(industries,697)
 smoke = industries[,6]
 smoke = as.matrix(smoke)
 
+
 # ThreeFactor = ThreeFactor[,-1]
 # ThreeFactor = as.matrix(ThreeFactor)
 
-Fama = Fama[,-1]
-Fama = as.matrix(Fama)
 
-reg = lm(smoke ~ Fama)
+Fama = Fama[,-1]  #remove the dates
+Fama = as.matrix(Fama)  #make dataframe into matrix 
 
-names(reg$coefficients) <- c("(Intercept)", tail(colnames(Fama),length(colnames(Fama))-1))
+excessReturns = smoke - Fama[,6]
+
+
+Fama = Fama[,1:5] #Remove the riskfree rate column
+
+
+reg = lm(excessReturns ~ Fama)
+
+names(reg$coefficients) <- c("(Intercept)", colnames(Fama))
 summary(reg)
 
 
+# check the hyptheses that....
 nullhyp1 = c("Mkt-RF=0")
 nullhyp2 = c("HML=0")
 nullhyp3 = c("SMB=0")

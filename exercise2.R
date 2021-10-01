@@ -106,21 +106,23 @@ minvar(covMat, wmin = -Inf, wmax = Inf) #test for shorting
 #function for calculating the variance
 variance <- function(x) {
   if(posSemDef(x)){   #check if PSD
-    t(minVar(x)) %*% x %*% minVar(x)  #using the matrix formula for variance
+    t(minVarWeights(x)) %*% x %*% minVarWeights(x)  #using the matrix formula for variance
   }
   else NA  #cant calculate variance if the matrix is not PSD
 }
 
+variance(covMat)
+
 #function for calculating the Sharpe ratio
 sharpe <- function(matrx, expReturns, riskFr) {
   if(posSemDef(matrx)){   #check if PSD
-    weights <- minVar(matrx)
+    weights <- minVarWeights(matrx)
     (t(weights) %*% expReturns - riskFr)/ sqrt(variance(matrx))   #using the formula for Sharpe ratio
   }
   else NA   #cant calculate variance if the matrix is not PSD
 }
 
-sharpe(covMat,expRet,riskFree)  #use the function to calculate the Sharpe ratio
+round(sharpe(covMat,expRet,riskFree),2)  #use the function to calculate the Sharpe ratio
 
 #doubleChecking with a ready made package
 #......

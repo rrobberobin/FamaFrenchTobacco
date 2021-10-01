@@ -39,11 +39,10 @@ geoMean <- function(x){
 geometricReturns<-c(geoMean(StockA),geoMean(StockB),geoMean(StockC))
 print(round(geometricReturns, 3))#print with 3 decimals
 
-Expectedreturns <- geometricReturns
+ExpectedReturns <- geometricReturns
 Riskfreereturn<-c(1.33)
 
-
-#all numbers are in annual percentages
+#assign shorter names
 covMat <- Covariancematrix
 expRet <- Expectedreturns
 riskFree <- Riskfreereturn
@@ -123,10 +122,4 @@ sharpe <- function(matrx, expReturns, riskFr) {
 }
 
 round(sharpe(covMat,expRet,riskFree),2)  #use the function to calculate the Sharpe ratio
-
-#doubleChecking with a ready made package
-#......
-
-
-
 

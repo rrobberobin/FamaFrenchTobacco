@@ -37,18 +37,18 @@ expRet <- Expectedreturns
 riskFree <- Riskfreereturn
 
 #a)
-#function fort testing if matrix is positive semi-definite (PSD)
+#function for testing if matrix is positive semi-definite (PSD)
 posSemDef <- function(x) {
   
   #We have to test if the matrix is symmetrical. We test it with the method isSymmetric()
   if(isSymmetric(x)){     #if it is symmetrical, we can calculate the eigenvalues,
-    eig <- eigen(x)$values  #we assign the eigenvalues to the variable eig
+    eig <- eigen(x)$values  #we assign the eigenvalues to the variable "eig"
     all(eig >= 0)           #tests if all eigenvalues are non-negative. Returns true if all are non-negative
   }
-  else FALSE    #if it is not symmetric, we cant calculate the eignevalues. That means it is not PSD (positive semi-definite), so we return false
+  else FALSE    #if it is not symmetric, we cant calculate the eigenvalues. That means it is not PSD (positive semi-definite), so we return false
 }
 
-#test if PSD
+#we use the function on our matrix
 posSemDef(covMat)
 
 #doubleChecking with a ready made package
@@ -60,28 +60,29 @@ is.positive.semi.definite(covMat)
 library(matlib) #package needed for taking inverses of matrices
 
 #function for calculating the weights for the minimum variance portfolio
-minVar <- function(x) {
-  if(posSemDef(x)){
-    rank <- sqrt(length(x))
-    numerator <- inv(x) %*% rep(1,rank)
-    denominator <- t(rep(1,rank)) %*% inv(x) %*% rep(1,rank)
+minVarWeights <- function(x) {
+  if(posSemDef(x)){   #check if matrix is PSD
+    rank <- sqrt(length(x)) #what is the rank of the matrix
     
-    weights <- numerator / denominator[1]
+    #we use the matrix formula for calculating the minimum variance portfolio
+    numerator <- inv(x) %*% rep(1,rank)   #first the numerator
+    denominator <- t(rep(1,rank)) %*% inv(x) %*% rep(1,rank)  #second the denominator
     
-    #sanity check
+    weights <- numerator / denominator[1]   #dividing the numerator and denominator gives us the weights
+    
+    #sanity check. The weights have to sum up to 1
     if(sum(weights) == 1){
       weights
     }
     else print("Weights do not sum to 1")
-    
   }
-  else NA
+  else NA   #if the matrix is not PSD, we cant calculate minimum variance portfolio weights
 }
 
-minVar(covMat)
+minVarWeights(covMat)  #use the function on our matrix
 
 
-#doubleChecking with a ready made package
+#doubleChecking the minimum variance weights with a ready made package
 library(NMOF)
 minvar(covMat)
 
@@ -89,22 +90,22 @@ minvar(covMat)
 
 #function for calculating the variance
 variance <- function(x) {
-  if(posSemDef(x)){
-    t(minVar(x)) %*% x %*% minVar(x)
+  if(posSemDef(x)){   #check if PSD
+    t(minVar(x)) %*% x %*% minVar(x)  #using the matrix formula for variance
   }
-  else NA
+  else NA  #cant calculate variance if the matrix is not PSD
 }
 
 #function for calculating the Sharpe ratio
 sharpe <- function(matrx, expReturns, riskFr) {
-  if(posSemDef(matrx)){
+  if(posSemDef(matrx)){   #check if PSD
     weights <- minVar(matrx)
-    (t(weights) %*% expReturns - riskFr)/ sqrt(variance(matrx))
+    (t(weights) %*% expReturns - riskFr)/ sqrt(variance(matrx))   #using the formula for Sharpe ratio
   }
-  else NA
+  else NA   #cant calculate variance if the matrix is not PSD
 }
 
-sharpe(covMat,expRet,riskFree)
+sharpe(covMat,expRet,riskFree)  #use the function to calculate the Sharpe ratio
 
 #doubleChecking with a ready made package
 #......

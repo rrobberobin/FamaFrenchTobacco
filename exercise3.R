@@ -17,22 +17,22 @@ ThreeFactor  <- read_excel("F-F_Research_Data_Factors.xlsx", skip = 3, n_max=114
 industriesFive = tail(industriesThree,697)
 FiveFactor  <- read_excel("F-F_Research_Data_5_Factors_2x3.xlsx", skip = 3, n_max=697, col_types = "numeric")
 
-smoke = industries[,6]
-steel = industries[,20]
+smoke = industries[,6]  #smoke
+steel = industries[,20] #steel
 
-industriesThree = industriesThree[,-1]
-industriesThree = as.matrix(industriesThree)
+ThreeFactor = ThreeFactor[,-1]
+ThreeFactor = as.matrix(ThreeFactor)
 
-industriesFive = industriesFive[,-1]
-industriesFive = as.matrix(industriesFive)
+FiveFactor = FiveFactor[,-1]
+FiveFactor = as.matrix(FiveFactor)
 
 smoke = as.matrix(smoke)
 steel = as.matrix(steel)
 
-smokeThree = lm(smoke ~ industriesThree)
-smokeFive = lm(smoke ~ industriesFive)
-steelThree = lm(steel ~ industriesThree)
-smokeFive = lm(steel ~ industriesFive)
+smokeThree = lm(smoke ~ ThreeFactor)
+smokeFive = lm(smoke ~ FiveFactor)
+steelThree = lm(steel ~ ThreeFactor)
+smokeFive = lm(steel ~ FiveFactor)
 
 names(reg$coefficients) <- c("(Intercept)", tail(colnames(Fama),length(colnames(Fama))-1))
 summary(reg)

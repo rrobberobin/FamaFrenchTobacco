@@ -26,9 +26,21 @@ Covariancematrix
 
 #Creating expected return % vector through arithmetic average of historical annual stock returns 
 #I am using arithmetic return average instead of geometric since the annual return data is "only" 6 years. 
-Expectedreturns<-c((sum(StockA)/length(StockA)),(sum(StockB)/length(StockB)),(sum(StockC)/length(StockC))) 
-Riskfreereturn<-c(1.33) 
+annualReturns<-c((sum(StockA)/length(StockA)),(sum(StockB)/length(StockB)),(sum(StockC)/length(StockC))) 
+print(round(annualReturns,3)) #print with 3 decimals
 
+#function for geometric mean
+geoMean <- function(x){
+  geo = exp(mean(log(1+x/100))) #calculate the geometric mean
+  (geo - 1)*100 #make into percentages
+  
+}
+
+geometricReturns<-c(geoMean(StockA),geoMean(StockB),geoMean(StockC))
+print(round(geometricReturns, 3))#print with 3 decimals
+
+Expectedreturns <- geometricReturns
+Riskfreereturn<-c(1.33)
 
 
 #all numbers are in annual percentages
@@ -85,6 +97,9 @@ minVarWeights(covMat)  #use the function on our matrix
 #doubleChecking the minimum variance weights with a ready made package
 library(NMOF)
 minvar(covMat)
+minvar(covMat, wmin = -Inf, wmax = Inf) #test for shorting
+
+
 
 #c)
 

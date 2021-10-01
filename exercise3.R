@@ -9,14 +9,14 @@ cat("\014");
 library(readxl)
 
 #Three-factor model
-#ThreeFactor  <- read_excel("F-F_Research_Data_Factors.xlsx", skip = 3, n_max=1142, col_types = "numeric")
-industriesThree <- read_excel("49_Industry_Portfolios.xlsx", skip = 11, n_max=1142, col_types = "numeric")
+#Fama  <- read_excel("F-F_Research_Data_Factors.xlsx", skip = 3, n_max=1142, col_types = "numeric")
+industries <- read_excel("49_Industry_Portfolios.xlsx", skip = 11, n_max=1142, col_types = "numeric")
 
 #Five-factor model
 Fama  <- read_excel("F-F_Research_Data_5_Factors_2x3.xlsx", skip = 3, n_max=697, col_types = "numeric")
-industriesFive = tail(industriesThree,697)
+industries = tail(industries,697)
 
-smoke = industriesFive[,6]
+smoke = industries[,6]
 smoke = as.matrix(smoke)
 
 # ThreeFactor = ThreeFactor[,-1]
@@ -34,7 +34,7 @@ summary(reg)
 nullhyp1 = c("Mkt-RF=0")
 nullhyp2 = c("HML=0")
 nullhyp3 = c("SMB=0")
-nullhyp4 = c("Mkt-RF","HML", "SMB")
+nullhyp4 = c("Mkt-RF","HML","SMB")
 
 library(car)
 linearHypothesis(reg, nullhyp1)

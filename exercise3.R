@@ -8,20 +8,17 @@ cat("\014");
 
 library(readxl)
 
-#Three-factor model
-#Fama  <- read_excel("F-F_Research_Data_Factors.xlsx", skip = 3, n_max=1142, col_types = "numeric")
-industries <- read_excel("49_Industry_Portfolios.xlsx", skip = 11, n_max=1142, col_types = "numeric")
 
-#Five-factor model
+#The five-factors
 Fama  <- read_excel("F-F_Research_Data_5_Factors_2x3.xlsx", skip = 3, n_max=697, col_types = "numeric")
-industries = tail(industries,697)
 
+#The returns for 49 industries
+industries <- read_excel("49_Industry_Portfolios.xlsx", skip = 11, n_max=1142, col_types = "numeric")
+industries = tail(industries,697) #Remove extra years from the begging. We are only using the years 1963-2021
+
+#The returns for the smoke industry
 smoke = industries[,6]
 smoke = as.matrix(smoke)
-
-
-# ThreeFactor = ThreeFactor[,-1]
-# ThreeFactor = as.matrix(ThreeFactor)
 
 
 Fama = Fama[,-1]  #remove the dates
@@ -95,21 +92,41 @@ plot(residuals(req1))
 #CLT. Vi har tagit så stor sample size som möjligt
 
 
+#We expect heteroskedasticity
 #Heteroskedasticity test: White
-# white = lm(residuals(reg1)^2 ~.^2, data=as.data.frame(Fama))
-# whiteDesc = summary(white)
-# NR2 = nobs(reg1) * whiteDesc$r.squared
-# NR2
-# pchisq(NR2,white$df.residual) #p-value is approximately zero
+white = lm(residuals(reg1)^2 ~.^2, data=as.data.frame(Fama))
+whiteDesc = summary(white)
+NR2 = nobs(reg1) * whiteDesc$r.squared
+#pValue = 1 - pchisq(NR2,white$df.residual)
+pValue = 1 - pchisq(NR2,ncol(model.matrix(white)[,-1])) 
+pValue #p-value is approximately 0.45. We reject the null hypothesis on significance values of 1, 5 and 10 percent. Seems like we have heteroskedasticity
 
-# library(lmtest);
-# bptest(reg1);        # Breusch-Pagan
+library(lmtest)
+bptest(reg1)      # Breusch-Pagan is the same test, and confirms the same message
 
+#Which variables create the problem? Let's see
+summary(white)
+#The interactions Mkt-RF:RMW and RMW:CMA are significant on all general levels
+#HML:RMW is significant on the 5% level. 
+#In general RMW, seems to cause heteroskedasticity. 
+#We could try to remove it. But we cant remove significant variables, and RMW is significant on all general significance levels
+#Instead: let's correct for heteroskedasticity using robust standard errors
+#For the White robust standard errors: When we have a large sample and heteroskedasticity is expected, we use HCE3
 
+robustReg1 = coeftest(reg1, vcov=vcovHC(reg1, type=c("HC3")))
+robustReg1
+linearHypothesis(reg1, nullhyp4, vcov=vcovHC(reg1, type=c("HC3")));
 
-#robust standard errors
+resid = residuals(reg1)
+laggedResids = c()
+for(n in 1:12){
+  laggedResids = cbind(laggedResids,lag(resid,n))}
 
-#Auto test med Andrews
+laggedReg = lm(resid ~ Fama + lag(resid, -1) + lag(resid, -2) + lag(resid, -3))
+summary(laggedReg)
+
+#We expect autocorrelation
+#Autocorrelation test with Andrews
 
 
 #noNinetyNines = industries[]

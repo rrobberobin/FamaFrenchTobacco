@@ -63,7 +63,7 @@ geoMean(Fama)
 ((geoMean(Fama)/100+1)^12-1)*100 #per year
 
 industries = industries[,-1]
-round(colMeans(industries),2)
+round(colMeans(industries),2)   #Vi måst komma ihåg o remova alla -99.99
 round(geoMean(industries),2)
 exp(mean(log(1+Fama[,2]/100)))^12 - 1
 exp(mean(log(1+smoke/100)))^12 - 1
@@ -117,25 +117,25 @@ robustReg1 = coeftest(reg1, vcov=vcovHC(reg1, type=c("HC3")))
 robustReg1
 linearHypothesis(reg1, nullhyp4, vcov=vcovHC(reg1, type=c("HC3")));
 
-resid = residuals(reg1)
-laggedResids = c()
-for(n in 1:12){
-  laggedResids = cbind(laggedResids,lag(resid,n))}
 
-laggedReg = lm(resid ~ Fama + lag(resid, -1) + lag(resid, -2) + lag(resid, -3))
-summary(laggedReg)
-
-#We expect autocorrelation
-#Autocorrelation test with Andrews
+#We expect autocorrelation. Let's test
+#"bgtest" is from the "lmtest" pack
+bgtest(reg1, 12)  #test of order 12 gives us the p-value is 0.3371. We seem to be having autocorrelation
 
 
-#noNinetyNines = industries[]
-#round(colMeans(industries),3)
+# resid = residuals(reg1)
+# laggedResids = c()
+# for(n in 1:12){
+#   laggedResids = cbind(laggedResids,lag(resid,n))}
+# laggedReg = lm(resid ~ Fama + lag(resid, -1) + lag(resid, -2) + lag(resid, -3))
+# summary(laggedReg)
+
+#Corrects for heteroskedasticity and autocorrelation (Andrews)
+robustReg1AutoHetero = coeftest(reg1, vcov=vcovHAC(reg1))
+robustReg1AutoHetero
+linearHypothesis(reg1, nullhyp4, vcov=vcovHAC(reg1)) #model is still significant
+
 
 #library(stargazer);
-
-
-
-
 
 

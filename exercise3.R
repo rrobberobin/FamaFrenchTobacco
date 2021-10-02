@@ -32,7 +32,8 @@ excessReturns = smoke - Fama[,6]
 
 Fama = Fama[,1:5] #Remove the riskfree rate column
 
-
+#använd i ställe:
+#lm(excessReturns ~., data=as.data.frame(Fama))
 reg1 = lm(excessReturns ~ Fama)
 names(reg1$coefficients) <- c("(Intercept)", colnames(Fama))
 summary(reg1)
@@ -89,14 +90,21 @@ summary(reg2)
 
 # Test for normality
 library(moments);
-jarque.test(residuals(reg1)); #we reject the null hypothesis: residuals normal. => Evidence for non-normal returns
+jarque.test(residuals(reg1)); #we reject the null hypothesis => Evidence for non-normal residuals
+plot(residuals(req1))
+#CLT. Vi har tagit så stor sample size som möjligt
 
 
+#Heteroskedasticity test: White
+# white = lm(residuals(reg1)^2 ~.^2, data=as.data.frame(Fama))
+# whiteDesc = summary(white)
+# NR2 = nobs(reg1) * whiteDesc$r.squared
+# NR2
+# pchisq(NR2,white$df.residual) #p-value is approximately zero
 
-#Heteroskedasticity med White
+# library(lmtest);
+# bptest(reg1);        # Breusch-Pagan
 
-white = lm(residuals(reg1)^2 ~ Fama + Fama*Fama) #I(Fama)^2 +
-summary(white)
 
 
 #robust standard errors

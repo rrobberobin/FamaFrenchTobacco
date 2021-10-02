@@ -33,10 +33,10 @@ excessReturns = smoke - Fama[,6]
 Fama = Fama[,1:5] #Remove the riskfree rate column
 
 
-reg = lm(excessReturns ~ Fama)
-
-names(reg$coefficients) <- c("(Intercept)", colnames(Fama))
-summary(reg)
+reg1 = lm(excessReturns ~ Fama)
+names(reg1$coefficients) <- c("(Intercept)", colnames(Fama))
+summary(reg1)
+#plot(reg1)
 
 
 # check the hyptheses that....
@@ -46,33 +46,62 @@ nullhyp3 = c("SMB=0")
 nullhyp4 = c("Mkt-RF","HML","SMB")
 
 library(car)
-linearHypothesis(reg, nullhyp1)
-linearHypothesis(reg, nullhyp2)
-linearHypothesis(reg, nullhyp3)
-linearHypothesis(reg, nullhyp4)
+linearHypothesis(reg1, nullhyp1)
+linearHypothesis(reg1, nullhyp2)
+linearHypothesis(reg1, nullhyp3)
+linearHypothesis(reg1, nullhyp4)
+
+geoMean <- function(x){
+  geo = exp(colMeans(log(1+x/100))) #geoMean
+  (geo - 1)*100 #in percentages
+}
 
 summary(smoke)
+geoMean(smoke) # 1.144416% per month
+((geoMean(smoke)/100+1)^12-1)*100 #14.63123% per year
+
 summary(Fama)
+geoMean(Fama)
+((geoMean(Fama)/100+1)^12-1)*100 #per year
 
-# exp(mean(log(1+Fama[,2]/100)))^12 - 1
-# exp(mean(log(1+smoke/100)))^12 - 1
-
-
+industries = industries[,-1]
+round(colMeans(industries),2)
+round(geoMean(industries),2)
+exp(mean(log(1+Fama[,2]/100)))^12 - 1
+exp(mean(log(1+smoke/100)))^12 - 1
 
 
 # Tests for multicollinearity
-cor(as.data.frame(model.matrix(reg)[,-1]))  # We find high correlation between HML and CMA. Corr = 0.67
-vif(as.data.frame(model.matrix(reg)[,-1]))
+cor(as.data.frame(model.matrix(reg1)[,-1]))  # We find high correlation between HML and CMA. Corr = 0.67
+vif(lm(excessReturns ~., data = as.data.frame(Fama))) # Higher than 10?
+
+
+#lets drop HML
+noHML = Fama[,-3]
+reg2 = lm(excessReturns ~ noHML)
+names(reg2$coefficients) <- c("(Intercept)", colnames(noHML))
+summary(reg2)
+
+
+#do auxiliary regressions
+#lm(model.matrix(reg1)[,-1] ~ model.matrix(reg1)[,-1])
 
 
 # Test for normality
 library(moments);
-jarque.test(residuals(reg));
+jarque.test(residuals(reg1)); #we reject the null hypothesis: residuals normal. => Evidence for non-normal returns
+
 
 
 #Heteroskedasticity med White
 
-#Auto test med 
+white = lm(residuals(reg1)^2 ~ Fama + Fama*Fama) #I(Fama)^2 +
+summary(white)
+
+
+#robust standard errors
+
+#Auto test med Andrews
 
 
 #noNinetyNines = industries[]

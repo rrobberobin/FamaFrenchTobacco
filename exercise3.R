@@ -85,12 +85,19 @@ summary(reg2)
 #lm(model.matrix(reg1)[,-1] ~ model.matrix(reg1)[,-1])
 
 
-# Test for normality
+# Test for normality. We have a big sample size, which decrease the problem
 library(moments);
 jarque.test(residuals(reg1)); #we reject the null hypothesis => Evidence for non-normal residuals
-plot(residuals(req1))
+plot(residuals(reg1))
+hist(residuals(reg1), breaks=50)
+plot(smoke, Fama[,5])
 #CLT. Vi har tagit så stor sample size som möjligt
 
+#Let's try make a logarithmic transform of the returns (continously compounded)
+logRet = lm(log(1+excessReturns/100) ~ log(1+Fama/100))
+summary(logRet)
+hist(residuals(logRet), breaks=50)
+jarque.test(residuals(logRet)); #no improvement. Now the residuals are even less normal
 
 #We expect heteroskedasticity
 #Heteroskedasticity test: White
@@ -130,12 +137,12 @@ bgtest(reg1, 12)  #test of order 12 gives us the p-value is 0.3371. We seem to b
 # laggedReg = lm(resid ~ Fama + lag(resid, -1) + lag(resid, -2) + lag(resid, -3))
 # summary(laggedReg)
 
-#Corrects for heteroskedasticity and autocorrelation (Andrews)
+#Correct for heteroskedasticity and autocorrelation (Andrews)
 robustReg1AutoHetero = coeftest(reg1, vcov=vcovHAC(reg1))
 robustReg1AutoHetero
 linearHypothesis(reg1, nullhyp4, vcov=vcovHAC(reg1)) #model is still significant
 
 
-#library(stargazer);
+#library(stargazer)
 
 

@@ -91,7 +91,9 @@ jarque.test(residuals(reg1)); #we reject the null hypothesis => Evidence for non
 plot(residuals(reg1))
 hist(residuals(reg1), breaks=50)
 plot(smoke, Fama[,5])
-#CLT. Vi har tagit så stor sample size som möjligt
+#CLT. As we used the whole sample for the FF5 factors from the French library, we consider the sample size to be as big as possible
+#As there exists no other samples of the returns except the real historical returns
+#If we would have daily data, we would get a bigger sample, and the statistca would become more normally distributed (CLT would apply)
 
 #Let's try make a logarithmic transform of the returns (continously compounded)
 logRet = lm(log(1+excessReturns/100) ~ log(1+Fama/100))
@@ -120,7 +122,7 @@ summary(white)
 #Instead: let's correct for heteroskedasticity using robust standard errors
 #For the White robust standard errors: When we have a large sample and heteroskedasticity is expected, we use HCE3
 
-library(lmtest); library(sandwich);
+library(sandwich) # also using library(lmtest)
 robustReg1 = coeftest(reg1, vcov=vcovHC(reg1, type=c("HC3")))
 robustReg1
 linearHypothesis(reg1, nullhyp4, vcov=vcovHC(reg1, type=c("HC3")));

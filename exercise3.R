@@ -81,7 +81,7 @@ names(reg2$coefficients) <- c("(Intercept)", colnames(noHML))
 summary(reg2)
 
 
-#do auxiliary regressions
+#auxiliary regressions?
 #lm(model.matrix(reg1)[,-1] ~ model.matrix(reg1)[,-1])
 
 
@@ -120,6 +120,7 @@ summary(white)
 #Instead: let's correct for heteroskedasticity using robust standard errors
 #For the White robust standard errors: When we have a large sample and heteroskedasticity is expected, we use HCE3
 
+library(lmtest); library(sandwich);
 robustReg1 = coeftest(reg1, vcov=vcovHC(reg1, type=c("HC3")))
 robustReg1
 linearHypothesis(reg1, nullhyp4, vcov=vcovHC(reg1, type=c("HC3")));

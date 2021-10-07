@@ -1,58 +1,54 @@
+#Exercise 2
+#Important:
+#Set your working directory to source file location!!!
+# Or launch R in the project folder
+
 rm(list=ls());
 cat("\014");
 
-#Exercise 2
 
-
-#Creating made-up annual returns % for 3 stocks, as a template for the variance-covariance matrix
-StockA<-c(5.7,3.1,-7.8,9.2,-2.7,4.5)
-StockB<-c(-18.3,12.6,-2.2,9.1,3.3,4.4)
-StockC<-c(10.5,-1.2,4.9,5.6,7.7,-0.7)
+#Creating made-up annual returns (in %) for 3 assets, as a template for the covariance matrix
+AssetA<-c(5.7,3.1,-7.8,9.2,-2.7,4.5)
+AssetB<-c(-18.3,12.6,-2.2,9.1,3.3,4.4)
+AssetC<-c(10.5,-1.2,4.9,5.6,7.7,-0.7)
 
 
 #Merging the return vectors into an annual return matrix
-Annualreturnsmatrix<-matrix(cbind(StockA,StockB,StockC),nrow=6,ncol=3,byrow=FALSE)
+Annualreturnsmatrix<-matrix(cbind(AssetA,AssetB,AssetC),nrow=6,ncol=3,byrow=FALSE)
 #Naming matrix rows
 rownames(Annualreturnsmatrix)<-c("2016","2017","2018","2019","2020","2021")
 #Naming matrix columns
-colnames(Annualreturnsmatrix)<-c("Stock A","Stock B","Stock C")
-#Printing Annual return matrix for testing purposes
+colnames(Annualreturnsmatrix)<-c("Asset A","Asset B","Asset C")
+#Printing Annual return matrix
 Annualreturnsmatrix
 
-#Creating covariance matrix for the annual returns matrix. Stock variance is shown in the matrix diagonal.
-Covariancematrix<-cov(Annualreturnsmatrix)
-Covariancematrix
+#Creating a covariance matrix from the annual returns matrix. Asset variances are shown in the matrix diagonal.
+covMat<-cov(Annualreturnsmatrix)
+round(covMat,2)
 
 
-#Creating expected return % vector through arithmetic average of historical annual stock returns 
-#I am using arithmetic return average instead of geometric since the annual return data is "only" 6 years. 
-annualReturns<-c((sum(StockA)/length(StockA)),(sum(StockB)/length(StockB)),(sum(StockC)/length(StockC))) 
-print(round(annualReturns,3)) #print with 3 decimals
-
-#function for geometric mean
+#function for the geometric mean
 geoMean <- function(x){
   geo = exp(mean(log(1+x/100))) #calculate the geometric mean
   (geo - 1)*100 #make into percentages
   
 }
 
-geometricReturns<-c(geoMean(StockA),geoMean(StockB),geoMean(StockC))
-print(round(geometricReturns, 3))#print with 3 decimals
+#Creating an expected return vector through the geometric average of historical annual asset returns
+#we us the geoMean function created earlier
+expRet<-c(geoMean(AssetA),geoMean(AssetB),geoMean(AssetC))
+print(round(expRet, 2))#print with 2 decimals
 
-ExpectedReturns <- geometricReturns
-Riskfreereturn<-c(1.33)
+#The risk-free return
+riskFree<-c(1.33)
 
-#assign shorter names
-covMat <- Covariancematrix
-expRet <- Expectedreturns
-riskFree <- Riskfreereturn
 
 #a)
 #function for testing if matrix is positive semi-definite (PSD)
-posSemDef <- function(x) {
+PSD <- function(x) {
   
   #We have to test if the matrix is symmetrical. We test it with the method isSymmetric()
-  if(isSymmetric(x)){     #if it is symmetrical, we can calculate the eigenvalues,
+  if(isSymmetric(x)){       #if it is symmetrical, we can calculate the eigenvalues,
     eig <- eigen(x)$values  #we assign the eigenvalues to the variable "eig"
     all(eig >= 0)           #tests if all eigenvalues are non-negative. Returns true if all are non-negative
   }
@@ -60,9 +56,10 @@ posSemDef <- function(x) {
 }
 
 #we use the function on our matrix
-posSemDef(covMat)
+PSD(covMat)
+if(PSD(covMat)) print(round(eigen(covMat)$values,2))     #let's print the eigenvalues as well with 2 decimals
 
-#doubleChecking with a ready made package
+#doubleChecking if PSD with a ready made package
 library(matrixcalc)
 is.positive.semi.definite(covMat)
 
@@ -72,31 +69,29 @@ library(matlib) #package needed for taking inverses of matrices
 
 #function for calculating the weights for the minimum variance portfolio
 minVarWeights <- function(x) {
-  if(posSemDef(x)){   #check if matrix is PSD
-    rank <- sqrt(length(x)) #what is the rank of the matrix
+  if(PSD(x)){   #check if matrix is PSD
+    rows <- nrow(x) #how many rows does the matrix have
     
-    #we use the matrix formula for calculating the minimum variance portfolio
-    numerator <- inv(x) %*% rep(1,rank)   #first the numerator
-    denominator <- t(rep(1,rank)) %*% inv(x) %*% rep(1,rank)  #second the denominator
+    #the matrix formula for calculating the minimum variance portfolio
+    numerator <- inv(x) %*% rep(1,rows)   #the numerator
+    denominator <- t(rep(1,rows)) %*% inv(x) %*% rep(1,rows)  #the denominator
     
-    weights <- numerator / denominator[1]   #dividing the numerator and denominator gives us the weights
+    weights <- numerator / denominator[1]   #dividing the numerator by denominator gives us the weights
     
     #sanity check. The weights have to sum up to 1
-    if(sum(weights) == 1){
-      weights
-    }
+    if(sum(weights) == 1) weights
     else print("Weights do not sum to 1")
   }
-  else NA   #if the matrix is not PSD, we cant calculate minimum variance portfolio weights
+  else NA   #if the matrix is not PSD, we can't calculate a minimum variance portfolio
 }
 
-minVarWeights(covMat)  #use the function on our matrix
+round(minVarWeights(covMat),3)  #the weights for the minimum variance portfolio
 
 
 #doubleChecking the minimum variance weights with a ready made package
 library(NMOF)
 minvar(covMat)
-minvar(covMat, wmin = -Inf, wmax = Inf) #test for shorting
+minvar(covMat, wmin = -Inf, wmax = Inf) #test when shorting is allowed
 
 
 
@@ -104,22 +99,22 @@ minvar(covMat, wmin = -Inf, wmax = Inf) #test for shorting
 
 #function for calculating the variance
 variance <- function(x) {
-  if(posSemDef(x)){   #check if PSD
-    t(minVarWeights(x)) %*% x %*% minVarWeights(x)  #using the matrix formula for variance
+  if(PSD(x)){   #check if PSD
+    t(minVarWeights(x)) %*% x %*% minVarWeights(x)  #the matrix formula for variance
   }
-  else NA  #cant calculate variance if the matrix is not PSD
+  else NA  #can't calculate variance if the matrix is not PSD
 }
 
-variance(covMat)
+round(variance(covMat),2)
 
 #function for calculating the Sharpe ratio
 sharpe <- function(matrx, expReturns, riskFr) {
-  if(posSemDef(matrx)){   #check if PSD
+  if(PSD(matrx)){   #check if PSD
     weights <- minVarWeights(matrx)
     (t(weights) %*% expReturns - riskFr)/ sqrt(variance(matrx))   #using the formula for Sharpe ratio
   }
-  else NA   #cant calculate variance if the matrix is not PSD
+  else NA   #can't calculate variance if the matrix is not PSD
 }
 
-round(sharpe(covMat,expRet,riskFree),2)  #use the function to calculate the Sharpe ratio
+round(sharpe(covMat,expRet,riskFree),2)  #use the function to calculate the Sharpe ratio and round to 2 decimals
 

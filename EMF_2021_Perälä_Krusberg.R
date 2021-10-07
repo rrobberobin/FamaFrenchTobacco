@@ -124,6 +124,7 @@ round(sharpe(covMat,expRet,riskFree),2)  #use the function to calculate the Shar
 
 
 
+
 #Exercise 3
 # rm(list=ls());
 # cat("\014");
@@ -147,12 +148,8 @@ Fama = Fama[,-1]  #remove the dates
 Fama = as.matrix(Fama)  #make dataframe into matrix 
 
 excessReturns = smoke - Fama[,6]
-
-
 Fama = Fama[,1:5] #Remove the riskfree rate column
 
-#använd i ställe:
-#lm(excessReturns ~., data=as.data.frame(Fama))
 reg1 = lm(excessReturns ~ Fama)
 names(reg1$coefficients) <- c("(Intercept)", colnames(Fama))
 summary(reg1)
@@ -210,7 +207,7 @@ hist(residuals(reg1), breaks=50, main = "Histogram of model residuals")
 #If we would have daily data, we would get a bigger sample, and the static would become more normally distributed (CLT would apply)
 
 #Let's try make a logarithmic transform of the returns
-logRet = lm(log(1+excessReturns/100) ~ log(1+Fama/100))
+logRet = lm(excessReturns ~ log(1+Fama/100))
 summary(logRet)
 hist(residuals(logRet), breaks=50)
 jarque.test(residuals(logRet)) #no improvement. Now the residuals are even less normal
@@ -254,8 +251,12 @@ linearHypothesis(reg1, nullhyp4, vcov=vcovHAC(reg1)) #model is still significant
 
 
 #Information criteria
-round(AIC(reg1),2)
-round(BIC(reg1),2)
+round(AIC(reg1, reg2, logRet),2)
+round(BIC(reg1, reg2, logRet),2)
+
+#adjusted R squared
+round(c(summary(reg1)$adj.r.squared, summary(reg2)$adj.r.squared, summary(logRet)$adj.r.squared), 4)
+
 
 
 library(stargazer)

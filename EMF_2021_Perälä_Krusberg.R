@@ -3,6 +3,9 @@
 #Set your working directory to source file location!
 #Or launch R in the project folder
 
+#or uncomment this:
+#setwd("c:/emf_2021")
+
 rm(list=ls());
 cat("\014");
 library(readxl);

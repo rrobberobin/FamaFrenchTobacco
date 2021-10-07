@@ -1,7 +1,4 @@
 #Exercise 2
-#Important:
-#Set your working directory to source file location!!!
-# Or launch R in the project folder
 
 rm(list=ls());
 cat("\014");
@@ -63,7 +60,7 @@ if(PSD(covMat)) {
   cat("\n\nEigenvalues:\n")
   print(round(eigen(covMat)$values,2))     #let's print the eigenvalues as well with 2 decimals
 }
-  
+
 #doubleChecking if PSD with a ready made package
 library(matrixcalc)
 is.positive.semi.definite(covMat)

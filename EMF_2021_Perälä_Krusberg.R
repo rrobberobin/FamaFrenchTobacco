@@ -8,10 +8,10 @@ cat("\014");
 library(readxl);
 
 #The five-factors
-Fama  <- read_excel("F-F_Research_Data_5_Factors_2x3.xlsx", skip = 3, n_max=697, col_types = "numeric")
+Fama  <- read_excel("Data\\F-F_Research_Data_5_Factors_2x3.xlsx", skip = 3, n_max=697, col_types = "numeric")
 
 #The returns for 49 industries
-industries <- read_excel("49_Industry_Portfolios.xlsx", skip = 11, n_max=1142, col_types = "numeric")
+industries <- read_excel("Data\\49_Industry_Portfolios.xlsx", skip = 11, n_max=1142, col_types = "numeric")
 industries = tail(industries,697) #Remove extra years from the begging. We are only using the years 1963-2021
 
 #The returns for the smoke industry
@@ -134,10 +134,8 @@ round(BIC(reg1, reg2, logRet),2)
 round(c(summary(reg1)$adj.r.squared, summary(reg2)$adj.r.squared, summary(logRet)$adj.r.squared), 4)
 
 
-
 library(stargazer)
 stargazer(reg1, reg2,
           type="text")
-
 
 

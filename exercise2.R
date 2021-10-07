@@ -19,12 +19,11 @@ Annualreturnsmatrix<-matrix(cbind(AssetA,AssetB,AssetC),nrow=6,ncol=3,byrow=FALS
 rownames(Annualreturnsmatrix)<-c("2016","2017","2018","2019","2020","2021")
 #Naming matrix columns
 colnames(Annualreturnsmatrix)<-c("Asset A","Asset B","Asset C")
-#Printing Annual return matrix
 Annualreturnsmatrix
 
 #Creating a covariance matrix from the annual returns matrix. Asset variances are shown in the matrix diagonal.
 covMat<-cov(Annualreturnsmatrix)
-round(covMat,2)
+print(round(covMat,2))
 
 
 #function for the geometric mean
@@ -37,11 +36,14 @@ geoMean <- function(x){
 #Creating an expected return vector through the geometric average of historical annual asset returns
 #we us the geoMean function created earlier
 expRet<-c(geoMean(AssetA),geoMean(AssetB),geoMean(AssetC))
+names(expRet) = colnames(Annualreturnsmatrix)
+cat("\n")
 print(round(expRet, 2))#print with 2 decimals
 
-#The risk-free return
+#The risk-free rate
 riskFree<-c(1.33)
-
+cat("\nThe risk-free rate:\n")
+cat(riskFree)
 
 #a)
 #function for testing if matrix is positive semi-definite (PSD)
@@ -57,8 +59,11 @@ PSD <- function(x) {
 
 #we use the function on our matrix
 PSD(covMat)
-if(PSD(covMat)) print(round(eigen(covMat)$values,2))     #let's print the eigenvalues as well with 2 decimals
-
+if(PSD(covMat)) {
+  cat("\n\nEigenvalues:\n")
+  print(round(eigen(covMat)$values,2))     #let's print the eigenvalues as well with 2 decimals
+}
+  
 #doubleChecking if PSD with a ready made package
 library(matrixcalc)
 is.positive.semi.definite(covMat)
@@ -85,7 +90,9 @@ minVarWeights <- function(x) {
   else NA   #if the matrix is not PSD, we can't calculate a minimum variance portfolio
 }
 
-round(minVarWeights(covMat),3)  #the weights for the minimum variance portfolio
+
+cat("\n\nWeights for the minimum variance portfolio\n")
+print(round(minVarWeights(covMat),3))  #the weights for the minimum variance portfolio
 
 
 #doubleChecking the minimum variance weights with a ready made package
@@ -105,7 +112,8 @@ variance <- function(x) {
   else NA  #can't calculate variance if the matrix is not PSD
 }
 
-round(variance(covMat),2)
+cat("\nVariance:\n")
+cat(round(variance(covMat),2))
 
 #function for calculating the Sharpe ratio
 sharpe <- function(matrx, expReturns, riskFr) {
@@ -116,5 +124,6 @@ sharpe <- function(matrx, expReturns, riskFr) {
   else NA   #can't calculate variance if the matrix is not PSD
 }
 
-round(sharpe(covMat,expRet,riskFree),2)  #use the function to calculate the Sharpe ratio and round to 2 decimals
+cat("\n\nSharpe:\n")
+cat(round(sharpe(covMat,expRet,riskFree),2))  #use the function to calculate the Sharpe ratio and round to 2 decimals
 

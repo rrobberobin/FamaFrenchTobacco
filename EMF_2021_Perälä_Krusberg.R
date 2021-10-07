@@ -1,13 +1,11 @@
 #Exercise 3
 #Important:
-#Set your working directory to source file location!!!
-# Or launch R in the project folder
+#Set your working directory to source file location!
+#Or launch R in the project folder
 
 rm(list=ls());
 cat("\014");
 library(readxl);
-#data = read_excel("c:/emf_2021/EMF_2021_name1_name2.xlsx");
-
 
 #The five-factors
 Fama  <- read_excel("F-F_Research_Data_5_Factors_2x3.xlsx", skip = 3, n_max=697, col_types = "numeric")

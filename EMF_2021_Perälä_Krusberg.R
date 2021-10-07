@@ -5,7 +5,8 @@
 
 rm(list=ls());
 cat("\014");
-library(readxl)
+library(readxl);
+#data = read_excel("c:/emf_2021/EMF_2021_name1_name2.xlsx");
 
 
 #The five-factors

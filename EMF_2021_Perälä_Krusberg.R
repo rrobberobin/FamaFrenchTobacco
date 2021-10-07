@@ -3,8 +3,7 @@
 #Set your working directory to source file location!
 #Or launch R in the project folder
 
-#or uncomment this:
-#setwd("c:/emf_2021")
+setwd("c://emf_2021//EMF_2021_Perälä_Krusberg")
 
 rm(list=ls());
 cat("\014");
@@ -15,7 +14,7 @@ Fama  <- read_excel("Data\\F-F_Research_Data_5_Factors_2x3.xlsx", skip = 3, n_ma
 
 #The returns for 49 industries
 industries <- read_excel("Data\\49_Industry_Portfolios.xlsx", skip = 11, n_max=1142, col_types = "numeric")
-industries = tail(industries,697) #Remove extra years from the begging. We are only using the years 1963-2021
+industries = tail(industries,697) #Removes extra years from the beginning. We are only using the years 1963-2021
 
 #The returns for the smoke industry
 smoke = industries[,6]

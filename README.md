@@ -9,5 +9,5 @@ Run "EMF_2021_Perälä_Krusberg.R" for exercise 3
 
 
 
-Not for self:
-Wasn't able to clone R project via github to R studio
+Note for self:
+Unable to clone R project via github to R studio

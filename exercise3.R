@@ -3,8 +3,6 @@
 #Set your working directory to source file location!
 #Or launch R in the project folder
 
-setwd("c://emf_2021//EMF_2021_Perala_Krusberg")
-
 rm(list=ls());
 cat("\014");
 library(readxl);
